@@ -1,0 +1,36 @@
+# mongo-values.yaml
+fullnameOverride: mongo
+
+architecture: replicaset
+replicaCount: 2
+replicaSetName: rs0
+
+arbiter:
+  enabled: true
+
+auth:
+  enabled: true
+  rootUser: root
+  rootPassword: "ChangeMeStrong123!"
+  usernames:
+    - appuser
+  passwords:
+    - "ChangeMeAppPass!"
+  databases:
+    - appdb
+
+service:
+  ports:
+    mongodb: 27017
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

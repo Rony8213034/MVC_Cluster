@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mvc-config
+  namespace: prod
+data:
+  APP_ENV: "production"
+  API_BASE_URL: "https://api.example.com"
+  MONGO_DB: "appdb"
+  MONGO_COLLECTION: "records"
