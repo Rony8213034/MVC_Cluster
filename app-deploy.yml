@@ -1,26 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mvc
-  namespace: prod
+  name: vinyl-api
+  namespace: 
 spec:
   replicas: 2
   revisionHistoryLimit: 5
   strategy: { type: RollingUpdate }
-  selector: { matchLabels: { app: mvc } }
+  selector: { matchLabels: { app: vinyl-api } }
   template:
-    metadata: { labels: { app: mvc } }
+    metadata: { labels: { app: vinyl-api } }
     spec:
       containers:
-        - name: mvc
+        - name: api
           image: 556856552551.dkr.ecr.ap-south-1.amazonaws.com/myvinalcollection:main
           imagePullPolicy: Always
-          args: ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
           ports: [{ containerPort: 8000 }]
           envFrom:
-            - configMapRef: { name: mvc-config }
-            - secretRef: { name: mvc-secrets }
-          # Probes: easiest is TCP + startup while Mongo handshake completes.
+            - configMapRef: { name: vinyl-api-config }
+            - secretRef: { name: vinyl-api-secrets }
           startupProbe:
             tcpSocket: { port: 8000 }
             initialDelaySeconds: 10

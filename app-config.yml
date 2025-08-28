@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mvc-config
-  namespace: prod
+  name: vinyl-api-config
+  namespace: 
 data:
   APP_ENV: "production"
   API_BASE_URL: "https://api.example.com"
