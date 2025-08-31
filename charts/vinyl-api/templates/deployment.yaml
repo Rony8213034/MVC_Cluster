@@ -14,22 +14,26 @@ spec:
         - name: api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports: [{ containerPort: 8000 }]
+          ports: [{ containerPort: {{ .Values.service.targetPort }} }]
           envFrom:
             - configMapRef: { name: {{ include "vinyl.fullname" . }}-config }
             - secretRef:
                 name: {{ .Values.mongo.existingSecret | default (printf "%s-secret" (include "vinyl.fullname" .)) }}
           startupProbe:
-            tcpSocket: { port: 8000 }
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            failureThreshold: 24
+            httpGet: { path: {{ .Values.probes.path | quote }}, port: {{ .Values.probes.port }} }
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+            initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+
           readinessProbe:
-            httpGet: { path: /healthz, port: 8000 }
-            periodSeconds: 10
+            httpGet: { path: {{ .Values.probes.path | quote }}, port: {{ .Values.probes.port }} }
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
           livenessProbe:
-            httpGet: { path: /healthz, port: 8000 }
-            initialDelaySeconds: 30
-            periodSeconds: 20
+            httpGet: { path: {{ .Values.probes.path | quote }}, port: {{ .Values.probes.port }} }
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
           resources:
 {{- toYaml .Values.resources | nindent 12 }}

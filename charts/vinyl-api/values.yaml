@@ -11,16 +11,16 @@ service:
   targetPort: 8000
 
 env:
-  DB_NAME: vinyl
+  DB_NAME: appdb
   COLL_NAME: records
   SEED_DATA: "true"
 
 # How to provide MONGO_URL to the pod:
 mongo:
   # If you already created a Secret (recommended), put its name here:
-  existingSecret: vinyl-api-secrets
+  existingSecret: ""
   # OR, for dev only, let the chart create the secret from this value:
-  mongoUrl: ""  # e.g. "mongodb://user:pass@mongo-0.mongo-headless.dev.svc.cluster.local:27017,.../appdb?replicaSet=rs0&authSource=appdb"
+  mongoUrl: 'mongodb://appuser:ChangeMeAppPass\!@mongo-0.mongo-headless.dev.svc.cluster.local:27017,mongo-1.mongo-headless.dev.svc.cluster.local:27017/appdb?replicaSet=rs0&authSource=appdb'  # e.g. "mongodb://user:pass@mongo-0.mongo-headless.dev.svc.cluster.local:27017,.../appdb?replicaSet=rs0&authSource=appdb"
 
 resources:
   requests:
@@ -29,3 +29,22 @@ resources:
   limits:
     cpu: 500m
     memory: 256Mi
+
+probes:
+  path: /healthz          
+  port: 8000
+
+  startup:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 60   
+
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 12
+
+  liveness:
+    initialDelaySeconds: 90  
+    periodSeconds: 10
+    failureThreshold: 3
