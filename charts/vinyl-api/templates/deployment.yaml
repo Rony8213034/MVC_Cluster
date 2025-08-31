@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vinyl.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: {{ include "vinyl.fullname" . }} }
+  template:
+    metadata:
+      labels: { app: {{ include "vinyl.fullname" . }} }
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports: [{ containerPort: 8000 }]
+          envFrom:
+            - configMapRef: { name: {{ include "vinyl.fullname" . }}-config }
+            - secretRef:
+                name: {{ .Values.mongo.existingSecret | default (printf "%s-secret" (include "vinyl.fullname" .)) }}
+          startupProbe:
+            tcpSocket: { port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}

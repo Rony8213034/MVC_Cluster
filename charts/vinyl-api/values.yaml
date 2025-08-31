@@ -1,0 +1,31 @@
+replicaCount: 2
+
+image:
+  repository: 556856552551.dkr.ecr.ap-south-1.amazonaws.com/myvinalcollection
+  tag: dev-latest
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+
+env:
+  DB_NAME: vinyl
+  COLL_NAME: records
+  SEED_DATA: "true"
+
+# How to provide MONGO_URL to the pod:
+mongo:
+  # If you already created a Secret (recommended), put its name here:
+  existingSecret: vinyl-api-secrets
+  # OR, for dev only, let the chart create the secret from this value:
+  mongoUrl: ""  # e.g. "mongodb://user:pass@mongo-0.mongo-headless.dev.svc.cluster.local:27017,.../appdb?replicaSet=rs0&authSource=appdb"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
