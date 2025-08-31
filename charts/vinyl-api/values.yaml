@@ -1,9 +1,11 @@
 replicaCount: 2
 
 image:
+  digest: ""
   repository: 556856552551.dkr.ecr.ap-south-1.amazonaws.com/myvinalcollection
   tag: dev-latest
   pullPolicy: Always
+rolloutToken: ""
 
 service:
   type: LoadBalancer

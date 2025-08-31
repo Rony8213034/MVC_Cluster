@@ -9,10 +9,16 @@ spec:
   template:
     metadata:
       labels: { app: {{ include "vinyl.fullname" . }} }
+      annotations:
+        rollme: "{{ .Values.rolloutToken | default "" }}"
     spec:
       containers:
         - name: api
+          {{- if .Values.image.digest }}
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports: [{ containerPort: {{ .Values.service.targetPort }} }]
           envFrom:
